@@ -1,3 +1,4 @@
+cat > index.html <<'EOF'
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -7,11 +8,12 @@
     <style>
         :root {
             --bg: #ffffff; --text-main: #1f2229; --text-muted: #6b7280; --bg-gray: #f2f4f5;
-            --border: #e5e7eb; --blue: #0074fa; --nav-height: 56px;
+            --border: #e5e7eb; --blue: #0074fa; --green: #00b06f; --nav-height: 60px;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg); color: var(--text-main); padding-bottom: var(--nav-height); overflow-x: hidden; }
 
+        /* WATERMARK */
         .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ff0000; font-size: 15px; font-weight: bold; z-index: 9999; pointer-events: none; opacity: 0.9; letter-spacing: 1px; }
 
         /* SIDEBAR */
@@ -19,8 +21,8 @@
         .sidebar-overlay.open { display: block; }
         .sidebar { position: fixed; top: 0; left: -85%; width: 85%; height: 100vh; background: var(--bg); z-index: 200; transition: left 0.25s ease; padding: 20px 16px; overflow-y: auto; }
         .sidebar.open { left: 0; }
-        .profile-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-        .profile-header img { width: 50px; height: 50px; border-radius: 50%; background: #d1d5db; }
+        .profile-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; cursor: pointer; }
+        .profile-header img { width: 50px; height: 50px; border-radius: 50%; background: #d1d5db; object-fit: cover; }
         .profile-info { display: flex; flex-direction: column; }
         .profile-name { font-size: 18px; font-weight: 700; }
         .profile-user { font-size: 14px; color: var(--text-muted); }
@@ -29,45 +31,47 @@
         .robux-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .robux-balance { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 700; }
         .robux-hex { width: 20px; height: 20px; fill: #000; }
-        .btn-buy-robux { background: #f2f4f5; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 600; font-size: 14px; color: var(--text-main); }
-        .premium-promo { display: flex; justify-content: space-between; align-items: center; font-size: 14px; border-top: 1px solid var(--border); padding-top: 12px; }
+        .btn-buy-robux { background: #f2f4f5; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 600; font-size: 14px; color: var(--text-main); cursor: pointer; }
+        .premium-promo { display: flex; justify-content: space-between; align-items: center; font-size: 14px; border-top: 1px solid var(--border); padding-top: 12px; cursor: pointer; }
         .premium-text { max-width: 85%; line-height: 1.3; font-weight: 500; }
         .menu-list { list-style: none; }
-        .menu-item { display: flex; align-items: center; gap: 16px; padding: 16px 0; font-size: 17px; font-weight: 700; }
+        .menu-item { display: flex; align-items: center; gap: 16px; padding: 16px 0; font-size: 17px; font-weight: 700; cursor: pointer; }
+        .menu-item:active { background-color: #f9f9f9; }
         .menu-item svg { width: 24px; height: 24px; fill: var(--text-main); }
         .menu-badge { margin-left: auto; background: var(--blue); color: white; font-size: 12px; font-weight: 700; width: 20px; height: 20px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
 
-        /* TOP BAR WITH REAL ROBLOX LOGO */
-        .top-bar { background: var(--bg); z-index: 100; display: flex; align-items: center; padding: 12px 16px; gap: 12px; }
+        /* TOP BAR */
+        .top-bar { background: var(--bg); z-index: 100; display: flex; align-items: center; padding: 12px 16px; gap: 12px; position: sticky; top: 0; }
         .menu-btn { display: flex; flex-direction: column; gap: 4px; position: relative; width: 22px; cursor: pointer; }
         .menu-btn .line { width: 100%; height: 2.5px; background: #000; border-radius: 2px; }
         .menu-btn .dot { position: absolute; top: -3px; left: -2px; width: 6px; height: 6px; background: var(--blue); border-radius: 50%; }
         
-        .search-bar { flex: 1; background: #f2f4f5; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; }
+        .search-bar { flex: 1; background: #f2f4f5; border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; cursor: text; }
         .search-bar svg { width: 18px; height: 18px; fill: var(--text-muted); }
-        .search-bar input { border: none; background: transparent; outline: none; width: 100%; font-size: 15px; font-weight: 500; color: var(--text-main); }
+        .search-bar input { border: none; background: transparent; outline: none; width: 100%; font-size: 15px; font-weight: 500; color: var(--text-main); pointer-events: none; }
         
         .top-icons { display: flex; gap: 14px; align-items: center; }
-        .top-icons svg { width: 24px; height: 24px; fill: var(--text-main); }
-        .top-robux { display: flex; align-items: center; gap: 4px; font-weight: 700; font-size: 16px; }
+        .top-icons svg { width: 24px; height: 24px; fill: var(--text-main); cursor: pointer; }
+        .top-robux { display: flex; align-items: center; gap: 4px; font-weight: 700; font-size: 16px; cursor: pointer; }
         .top-robux svg { width: 18px; height: 18px; }
         .notif-badge { position: relative; }
         .notif-badge::after { content: '1'; position: absolute; top: -4px; right: -4px; background: var(--blue); color: white; font-size: 10px; font-weight: bold; width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid #fff; }
 
-        /* CONTENT */
+        /* KONTEN */
         .content-area { display: none; animation: fadeIn 0.2s; }
         .content-area.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .filter-pills { display: flex; gap: 8px; padding: 0 16px 12px 16px; overflow-x: auto; scrollbar-width: none; }
-        .pill { padding: 7px 14px; border-radius: 20px; font-size: 14px; font-weight: 600; border: 1.5px solid #000; white-space: nowrap; display: flex; align-items: center; gap: 6px; background: #fff; color: #000; }
+        .pill { padding: 7px 14px; border-radius: 20px; font-size: 14px; font-weight: 600; border: 1.5px solid #000; white-space: nowrap; display: flex; align-items: center; gap: 6px; background: #fff; color: #000; cursor: pointer; }
         .pill svg { width: 12px; height: 12px; fill: currentColor; }
         .section-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 10px 16px; }
-        .section-title-group { display: flex; align-items: center; gap: 6px; }
+        .section-title-group { display: flex; align-items: center; gap: 6px; cursor: pointer; }
         .section-title-group h2 { font-size: 18px; font-weight: 800; }
         .section-title-group svg { width: 18px; height: 18px; fill: var(--text-main); }
-        .info-icon { width: 16px; height: 16px; border: 1.5px solid #6b7280; color: #6b7280; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: bold; font-family: serif; }
+        .info-icon { width: 16px; height: 16px; border: 1.5px solid #6b7280; color: #6b7280; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: bold; font-family: serif; cursor: pointer; }
         .h-scroll { display: flex; gap: 12px; padding: 0 16px 16px 16px; overflow-x: auto; scrollbar-width: none; }
-        .game-card { min-width: 140px; width: 140px; }
+        .game-card { min-width: 140px; width: 140px; cursor: pointer; }
+        .game-card:active { opacity: 0.8; }
         .game-card img { width: 140px; height: 140px; border-radius: 12px; object-fit: cover; background: var(--bg-gray); }
         .game-title { font-size: 14px; font-weight: 700; margin: 6px 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
         .game-stats { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; font-weight: 500; }
@@ -75,24 +79,25 @@
 
         /* AVATAR */
         .avatar-top-bar { display: flex; align-items: center; padding: 12px 16px; gap: 12px; position: relative; z-index: 10; }
-        .back-btn { font-size: 20px; font-weight: bold; }
-        .avatar-top-pill { background: #f2f4f5; padding: 8px 16px; border-radius: 12px; font-weight: 700; font-size: 15px; flex: 1; display: flex; justify-content: space-between; align-items: center; }
+        .back-btn { font-size: 20px; font-weight: bold; cursor: pointer; }
+        .avatar-top-pill { background: #f2f4f5; padding: 8px 16px; border-radius: 12px; font-weight: 700; font-size: 15px; flex: 1; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .avatar-viewer { height: 45vh; background: #f2f4f5; display: flex; justify-content: center; align-items: center; position: relative; background-image: linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(90deg, #e5e7eb 1px, transparent 1px); background-size: 50px 50px; }
         .avatar-viewer img { height: 85%; object-fit: contain; z-index: 2; }
         .avatar-left-icons { position: absolute; top: 16px; left: 16px; display: flex; flex-direction: column; gap: 8px; background: white; padding: 4px; border-radius: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); z-index: 10; }
-        .avatar-left-icons div { width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; }
+        .avatar-left-icons div { width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
         .avatar-left-icons img { width: 24px; height: 24px; border-radius: 50%; }
-        .float-robux { position: absolute; top: 16px; right: 16px; background: white; padding: 6px 12px; border-radius: 16px; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); z-index: 10; }
+        .float-robux { position: absolute; top: 16px; right: 16px; background: white; padding: 6px 12px; border-radius: 16px; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); z-index: 10; cursor: pointer; }
         .avatar-controls { position: absolute; bottom: 30px; left: 16px; display: flex; gap: 8px; z-index: 10; }
-        .ctrl-btn { background: rgba(255,255,255,0.9); width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 20px; }
+        .ctrl-btn { background: rgba(255,255,255,0.9); width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.1); font-size: 20px; cursor: pointer; }
         .avatar-sheet { background: white; border-radius: 24px 24px 0 0; margin-top: -20px; position: relative; padding-top: 12px; z-index: 10; box-shadow: 0 -4px 12px rgba(0,0,0,0.05); }
         .drag-handle { width: 36px; height: 4px; background: #d1d5db; border-radius: 2px; margin: 0 auto 16px auto; }
         .avatar-tabs { display: flex; padding: 0 16px; gap: 20px; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; align-items: center; }
         .a-tab { font-size: 15px; font-weight: 600; color: var(--text-muted); padding-bottom: 12px; cursor: pointer; white-space: nowrap; }
         .a-tab.active { color: var(--text-main); border-bottom: 3px solid var(--text-main); }
-        .filter-icon { margin-left: auto; padding-bottom: 12px; }
+        .filter-icon { margin-left: auto; padding-bottom: 12px; cursor: pointer; }
         .item-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 12px; padding: 16px; }
-        .item-card { display: flex; flex-direction: column; gap: 3px; }
+        .item-card { display: flex; flex-direction: column; gap: 3px; cursor: pointer; }
+        .item-card:active { opacity: 0.8; }
         .item-img-box { background: var(--bg-gray); border-radius: 12px; aspect-ratio: 1/1; display: flex; justify-content: center; align-items: center; overflow: hidden; }
         .item-img-box img { width: 85%; height: 85%; object-fit: contain; }
         .item-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-main); margin-top: 4px; }
@@ -107,7 +112,7 @@
         .chat-icon-box svg { width: 60px; height: 60px; fill: none; stroke: var(--text-main); stroke-width: 2; transform: rotate(-8deg); }
         .chat-empty h2 { font-size: 20px; font-weight: 800; margin-bottom: 12px; }
         .chat-empty p { font-size: 17px; color: var(--text-muted); line-height: 1.4; margin-bottom: 24px; }
-        .btn-add-friend { background: #1f2229; color: white; border: none; padding: 16px 24px; border-radius: 12px; font-size: 16px; font-weight: 700; width: 100%; max-width: 320px; }
+        .btn-add-friend { background: #1f2229; color: white; border: none; padding: 16px 24px; border-radius: 12px; font-size: 16px; font-weight: 700; width: 100%; max-width: 320px; cursor: pointer; }
 
         /* BOTTOM NAV */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--nav-height); background: var(--bg); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid var(--border); z-index: 100; padding-bottom: env(safe-area-inset-bottom); }
@@ -115,15 +120,31 @@
         .nav-item svg { width: 24px; height: 24px; fill: currentColor; }
         .nav-item.active { color: var(--text-main); }
         .nav-item.active img { border: 2px solid var(--text-main); border-radius: 50%; padding: 1px; background: #fff; }
+
+        /* MODAL ALERT (Klik Item) */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 24px; border-radius: 16px; text-align: center; width: 80%; max-width: 300px; }
+        .modal-content h3 { margin-bottom: 8px; }
+        .modal-content p { color: var(--text-muted); margin-bottom: 20px; font-size: 14px; }
+        .modal-btn { background: var(--blue); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="watermark">B-DBG: NONE</div>
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
+    <!-- MODAL -->
+    <div class="modal" id="actionModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Item Terbuka</h3>
+            <p id="modalDesc">Ini adalah simulasi tampilan. Aset berhasil dimuat di dalam sistem.</p>
+            <button class="modal-btn" onclick="closeModal()">Tutup</button>
+        </div>
+    </div>
+
     <!-- SIDEBAR -->
     <div class="sidebar" id="sidebar">
-        <div class="profile-header">
+        <div class="profile-header" onclick="showModal('Profil', 'Membuka halaman profil pengguna...')">
             <img src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-11909716676-Png/150/150/AvatarHeadshot/Png/noFilter" alt="Avatar">
             <div class="profile-info"><div class="profile-name">rick...</div><div class="profile-user">@ri...</div></div>
             <div class="badge">Belum diperiksa</div>
@@ -131,14 +152,14 @@
         <div class="robux-card">
             <div class="robux-top">
                 <div class="robux-balance"><svg class="robux-hex" viewBox="0 0 24 24"><path d="M12 2L3 7l9 5 9-5-9-5zm0 9l-9-5v10l9 5 9-5V6l-9 5z"/></svg> 0</div>
-                <button class="btn-buy-robux">Beli Robux</button>
+                <button class="btn-buy-robux" onclick="showModal('Beli Robux', 'Sistem pembelian belum tersedia.')">Beli Robux</button>
             </div>
-            <div class="premium-promo"><span class="premium-text">Lebih seru, lebih hemat Robux. Subscribe Roblox</span><span style="font-size: 20px; color: #6b7280;">›</span></div>
+            <div class="premium-promo" onclick="showModal('Premium', 'Membuka halaman langganan Premium.')"><span class="premium-text">Lebih seru, lebih hemat Robux. Subscribe Roblox</span><span style="font-size: 20px; color: #6b7280;">›</span></div>
         </div>
         <ul class="menu-list">
-            <li class="menu-item"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> Teman</li>
-            <li class="menu-item"><svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg> Inventaris</li>
-            <li class="menu-item"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> Pesan <span class="menu-badge">1</span></li>
+            <li class="menu-item" onclick="showModal('Teman', 'Membuka daftar teman.')"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> Teman</li>
+            <li class="menu-item" onclick="showModal('Inventaris', 'Membuka semua item yang kamu miliki.')"><svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg> Inventaris</li>
+            <li class="menu-item" onclick="showModal('Pesan', 'Membuka kotak masuk pesan.')"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> Pesan <span class="menu-badge">1</span></li>
         </ul>
     </div>
 
@@ -150,31 +171,71 @@
         <svg viewBox="0 0 24 24" style="width: 28px; height: 28px; fill: #1f2229; margin-right: 4px;">
             <path d="M5.16 0L0 18.84l18.84 5.16L24 5.16 5.16 0zm8.5 16.66l-6.31-1.73 1.73-6.31 6.31 1.73-1.73 6.31z"/>
         </svg>
-        <div class="search-bar">
+        <div class="search-bar" onclick="showModal('Pencarian', 'Fitur pencarian dalam pengembangan.')">
             <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            <input type="text" placeholder="Cari">
+            <input type="text" placeholder="Cari" readonly>
         </div>
         <div class="top-icons">
-            <div class="top-robux"><svg viewBox="0 0 24 24" style="fill:#000;"><path d="M12 2L3 7l9 5 9-5-9-5zm0 9l-9-5v10l9 5 9-5V6l-9 5z"/></svg> 0</div>
-            <svg class="notif-badge" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>
+            <div class="top-robux" onclick="showModal('Saldo', 'Saldo kamu saat ini: 0 Robux.')"><svg viewBox="0 0 24 24" style="fill:#000;"><path d="M12 2L3 7l9 5 9-5-9-5zm0 9l-9-5v10l9 5 9-5V6l-9 5z"/></svg> 0</div>
+            <svg class="notif-badge" onclick="showModal('Notifikasi', 'Kamu memiliki 1 pesan baru.')" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>
+        </div>
+    </div>
+
+    <!-- HALAMAN BERANDA -->
+    <div class="content-area" id="page-beranda">
+        <div class="filter-pills">
+            <div class="pill" onclick="showModal('Filter', 'Ponsel Standar terpilih.')">Ponsel Standar <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></div>
+            <div class="pill" onclick="showModal('Filter', 'Wilayah Indonesia terpilih.')">Indonesia <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></div>
+        </div>
+        <div class="section-header">
+            <div class="section-title-group" onclick="showModal('Tren Teratas', 'Membuka daftar game terpopuler.')"><h2>Tren Teratas</h2> <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+            <div class="info-icon" onclick="showModal('Info', 'Data tren diperbarui setiap saat.')">i</div>
+        </div>
+        <div class="h-scroll">
+            <div class="game-card" onclick="showModal('Main Game', 'Menjalankan game Lempar Kue...')">
+                <img src="https://tr.rbxcdn.com/180DAY-8d5c3a19c374c9166d5c3d1c7324368e/352/352/Image/Png/noFilter">
+                <div class="game-title">[🎃] Lempar Kue</div>
+                <div class="game-stats"><svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg> 93%</div>
+            </div>
+            <div class="game-card" onclick="showModal('Main Game', 'Menjalankan game Jangan Menye...')">
+                <img src="https://tr.rbxcdn.com/180DAY-9853f577c91b4b5d90891d0720563a82/352/352/Image/Png/noFilter">
+                <div class="game-title">JANGAN MENYE...</div>
+                <div class="game-stats"><svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg> 87%</div>
+            </div>
         </div>
     </div>
 
     <!-- HALAMAN TERATAS -->
     <div class="content-area active" id="page-teratas">
         <div class="filter-pills">
-            <div class="pill">Ponsel Standar <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></div>
-            <div class="pill">Indonesia <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></div>
+            <div class="pill" onclick="showModal('Filter', 'Ponsel Standar terpilih.')">Ponsel Standar <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></div>
+            <div class="pill" onclick="showModal('Filter', 'Wilayah Indonesia terpilih.')">Indonesia <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></div>
         </div>
         <div class="section-header">
-            <div class="section-title-group"><h2>Tren Teratas</h2> <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
-            <div class="info-icon">i</div>
+            <div class="section-title-group" onclick="showModal('Tren', 'Membuka tren teratas.')"><h2>Tren Teratas</h2> <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+            <div class="info-icon" onclick="showModal('Info', 'Data tren diperbarui.')">i</div>
         </div>
         <div class="h-scroll">
-            <div class="game-card">
-                <img src="https://tr.rbxcdn.com/180DAY-8d5c3a19c374c9166d5c3d1c7324368e/352/352/Image/Png/noFilter">
-                <div class="game-title">[🎃] Lempar Kue</div>
-                <div class="game-stats"><svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg> 93%</div>
+            <div class="game-card" onclick="showModal('Main Game', 'Menjalankan game [🎃] Sepeda...')">
+                <img src="https://tr.rbxcdn.com/180DAY-f7b365c98b9d0b31b837b0a6ad6d2336/352/352/Image/Png/noFilter">
+                <div class="game-title">[🎃] Sepeda</div>
+                <div class="game-stats"><svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg> 95%</div>
+            </div>
+            <div class="game-card" onclick="showModal('Main Game', 'Menjalankan game Malam Bersama...')">
+                <img src="https://tr.rbxcdn.com/180DAY-6e7c6f22139e87f8b84d19e7e8e7a78d/352/352/Image/Png/noFilter">
+                <div class="game-title">Malam Bersama...</div>
+                <div class="game-stats"><svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg> 84%</div>
+            </div>
+        </div>
+        <div class="section-header">
+            <div class="section-title-group" onclick="showModal('Yang Akan Datang', 'Membuka daftar game masa depan.')"><h2>Yang akan Datang</h2> <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+            <div class="info-icon" onclick="showModal('Info', 'Data game masa depan.')">i</div>
+        </div>
+        <div class="h-scroll">
+            <div class="game-card" onclick="showModal('Detail Game', 'Game belum rilis.')">
+                <div style="width:140px; height:140px; border-radius:12px; background:#e5e7eb;"></div>
+                <div class="game-title">[🌍UPD] +1 Mata</div>
+                <div class="game-stats"><svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg> 96%</div>
             </div>
         </div>
     </div>
@@ -182,25 +243,49 @@
     <!-- HALAMAN AVATAR -->
     <div class="content-area" id="page-avatar">
         <div class="avatar-top-bar">
-            <div class="back-btn">←</div>
-            <div class="avatar-top-pill">Market... Kustomi... <span style="color:#6b7280; font-size:12px;">⌄</span></div>
-            <svg viewBox="0 0 24 24" style="width:24px; fill:#000;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <div class="back-btn" onclick="switchTab('beranda', document.querySelectorAll('.nav-item')[0], 'Beranda')">←</div>
+            <div class="avatar-top-pill" onclick="showModal('Kustomisasi', 'Membuka menu kustomisasi avatar.')">Market... Kustomi... <span style="color:#6b7280; font-size:12px;">⌄</span></div>
+            <svg viewBox="0 0 24 24" onclick="showModal('Pencarian', 'Mencari item avatar.')" style="width:24px; fill:#000; cursor:pointer;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
         </div>
         <div class="avatar-viewer">
-            <div class="float-robux"><svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:#000;"><path d="M12 2L3 7l9 5 9-5-9-5zm0 9l-9-5v10l9 5 9-5V6l-9 5z"/></svg> 0</div>
-            <img src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-11909716676-Png/420/420/AvatarHeadshot/Png/noFilter" alt="Avatar 3D">
+            <div class="avatar-left-icons">
+                <div onclick="showModal('Profil', 'Foto profil.')"><img src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-11909716676-Png/150/150/AvatarHeadshot/Png/noFilter"></div>
+                <div onclick="showModal('Pengaturan', 'Pengaturan avatar.')"><svg viewBox="0 0 24 24" style="width:20px; fill:none; stroke:#000; stroke-width:2;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></div>
+            </div>
+            <div class="float-robux" onclick="showModal('Saldo', 'Saldo kamu 0 Robux.')"><svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:#000;"><path d="M12 2L3 7l9 5 9-5-9-5zm0 9l-9-5v10l9 5 9-5V6l-9 5z"/></svg> 0</div>
+            <img src="https://tr.rbxcdn.com/30DAY-AvatarHeadshot-11909716676-Png/420/420/AvatarHeadshot/Png/noFilter" alt="Avatar 3D" onclick="showModal('3D Avatar', 'Memutar karakter 3D...')">
+            <div class="avatar-controls">
+                <div class="ctrl-btn" style="color:#9ca3af;" onclick="showModal('Undo', 'Tidak ada perubahan untuk dibatalkan.')">↺</div>
+                <div class="ctrl-btn" style="color:#9ca3af;" onclick="showModal('Redo', 'Tidak ada perubahan untuk diulang.')">↻</div>
+            </div>
         </div>
         <div class="avatar-sheet">
             <div class="drag-handle"></div>
             <div class="avatar-tabs">
-                <div class="a-tab active">Semua</div><div class="a-tab">Avatar</div><div class="a-tab">Lain</div>
+                <div class="a-tab active" onclick="showModal('Tab Semua', 'Menampilkan semua item.')">Semua</div>
+                <div class="a-tab" onclick="showModal('Tab Avatar', 'Menampilkan item avatar.')">Avatar</div>
+                <div class="a-tab" onclick="showModal('Tab Lain', 'Menampilkan item lain.')">Lain</div>
+                <div class="filter-icon" onclick="showModal('Filter', 'Membuka opsi filter.')"><svg viewBox="0 0 24 24" style="width:20px; fill:none; stroke:#000; stroke-width:2;"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg></div>
             </div>
             <h3 style="padding: 16px 16px 0 16px; font-size: 20px; font-weight:800;">Direkomendasikan...</h3>
             <div class="item-grid">
-                <div class="item-card">
+                <div class="item-card" onclick="showModal('Helm Baja', 'Item ini seharga 50.000 Robux.')">
                     <div class="item-img-box"><img src="https://tr.rbxcdn.com/180DAY-7c18a4a76f3f62f4d2a5d7c2b2a4a5d1/420/420/Hat/Png/noFilter" onerror="this.src='https://tr.rbxcdn.com/180DAY-c0d3b3d0f4b6d4b5b6e6e6e6e6e6e6e6/420/420/Hat/Png/noFilter'"></div>
                     <div class="item-name">Helm Baj...</div>
+                    <div class="item-creator">Roblox <svg class="verified" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.4-1.4 3.6 3.6 7.6-7.6L19 8l-9 9z"/></svg></div>
                     <div class="item-price"><svg class="price-icon" viewBox="0 0 24 24"><path d="M12 2L3 7l9 5 9-5-9-5zm0 9l-9-5v10l9 5 9-5V6l-9 5z"/></svg> 50.000</div>
+                </div>
+                <div class="item-card" onclick="showModal('Tengkorak', 'Item ini seharga 10.000 Robux.')">
+                    <div class="item-img-box"><img src="https://tr.rbxcdn.com/180DAY-f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6/420/420/Hat/Png/noFilter" onerror="this.src='https://tr.rbxcdn.com/180DAY-c0d3b3d0f4b6d4b5b6e6e6e6e6e6e6e6/420/420/Hat/Png/noFilter'"></div>
+                    <div class="item-name">Tengkor...</div>
+                    <div class="item-creator">Roblox <svg class="verified" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.4-1.4 3.6 3.6 7.6-7.6L19 8l-9 9z"/></svg></div>
+                    <div class="item-price"><svg class="price-icon" viewBox="0 0 24 24"><path d="M12 2L3 7l9 5 9-5-9-5zm0 9l-9-5v10l9 5 9-5V6l-9 5z"/></svg> 10.000</div>
+                </div>
+                <div class="item-card" onclick="showModal('Penutup Api', 'Item ini seharga 2.500 Robux.')">
+                    <div class="item-img-box"><img src="https://tr.rbxcdn.com/180DAY-a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6/420/420/Hat/Png/noFilter" onerror="this.src='https://tr.rbxcdn.com/180DAY-c0d3b3d0f4b6d4b5b6e6e6e6e6e6e6e6/420/420/Hat/Png/noFilter'"></div>
+                    <div class="item-name">Penutup A...</div>
+                    <div class="item-creator">Roblox <svg class="verified" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.4-1.4 3.6 3.6 7.6-7.6L19 8l-9 9z"/></svg></div>
+                    <div class="item-price"><svg class="price-icon" viewBox="0 0 24 24"><path d="M12 2L3 7l9 5 9-5-9-5zm0 9l-9-5v10l9 5 9-5V6l-9 5z"/></svg> 2.500</div>
                 </div>
             </div>
         </div>
@@ -212,7 +297,7 @@
             <div class="chat-icon-box"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="12" cy="10" r="3"/><path d="M7 18c0-2.5 3-4 5-4s5 1.5 5 4"/></svg></div>
             <h2>Tambah Teman</h2>
             <p>Kamu belum menambahkan satu teman pun. Untuk memulai, cari dan tambahkan temanmu di Roblox.</p>
-            <button class="btn-add-friend">Tambah Teman</button>
+            <button class="btn-add-friend" onclick="showModal('Tambah Teman', 'Membuka pencarian pengguna.')">Tambah Teman</button>
         </div>
     </div>
 
@@ -227,4 +312,34 @@
     <script>
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
-            document.getElemen
+            document.getElementById('sidebarOverlay').classList.toggle('open');
+        }
+
+        function switchTab(pageId, navElement, titleText) {
+            document.querySelectorAll('.content-area').forEach(page => page.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            navElement.classList.add('active');
+            
+            const topBar = document.getElementById('mainTopBar');
+            if (pageId === 'avatar') { 
+                topBar.style.display = 'none'; 
+            } else { 
+                topBar.style.display = 'flex'; 
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function showModal(title, desc) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerText = desc;
+            document.getElementById('actionModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('actionModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
+EOF
